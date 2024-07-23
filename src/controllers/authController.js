@@ -47,11 +47,6 @@ const findNextAvailableSponsor = async (userId) => {
 
 exports.registerUser = async (req, res) => {
   const { email, password, mobileNumber, bankDetails, upiNumber, sponsorUsername,ePinId,name } = req.body;
-  const userExists = await User.findOne({ email });
-
-  if (userExists) {
-    return res.status(200).json({ status:400,message: 'User already exists' });
-  }
 
   const epin = await Epin.findOne({ ePinId, status: 'unused' });
   if (!epin) {
