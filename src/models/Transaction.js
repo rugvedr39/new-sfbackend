@@ -39,6 +39,11 @@ transactionSchema.statics.getTopReceivers = async function (page = 1, limit = 10
       },
       { $unwind: '$receiverInfo' },
       {
+        $match: {
+          'receiverInfo.username': { $nin: ["SF812165","SF922715","SF421545","SF564748","SF258357","SF357970","SF131274","SF802730"] } // Exclude specified usernames
+        }
+      },
+      {
         $project: {
           _id: 0,
           receiverId: '$_id',

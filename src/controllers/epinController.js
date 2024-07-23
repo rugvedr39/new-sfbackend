@@ -53,15 +53,46 @@ exports.generateEpin = async (req, res) => {
 
 // Get all E-pins
 exports.getEpins = async (req, res) => {
-  const {UserId} = req.params
-  const epins = await Epin.find({
-    $or: [
-      { assignedTo: UserId },
-      { 'transferHistory.transferredFrom': UserId }
-    ]
-  }).populate('assignedTo transferHistory.transferredFrom transferHistory.transferredTo');
+  const { UserId } = req.params;
+  const page = parseInt(req.query.page, 10) || 1; // Default to page 1 if not provided
+  const limit = parseInt(req.query.limit, 10) || 10; // Default to 10 items per page if not provided
 
-  res.status(200).json(epins);
+  try {
+    const skip = (page - 1) * limit;
+
+    const epins = await Epin.find({
+      $or: [
+        { assignedTo: UserId },
+        { 'transferHistory.transferredFrom': UserId }
+      ]
+    })
+    .sort({
+      status: 1, // Sort by status. 'unused' will be sorted first if 'unused' is alphabetically before other statuses
+      createdAt: -1 // Sort by createdAt in descending order
+    })
+    .skip(skip)
+    .limit(limit)
+    .populate('assignedTo transferHistory.transferredFrom transferHistory.transferredTo')
+    .exec();
+
+    const totalEpins = await Epin.countDocuments({
+      $or: [
+        { assignedTo: UserId },
+        { 'transferHistory.transferredFrom': UserId }
+      ]
+    });
+
+    res.status(200).json({
+      page,
+      limit,
+      totalPages: Math.ceil(totalEpins / limit),
+      totalEpins,
+      epins
+    });
+  } catch (error) {
+    console.error('Error fetching epins:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 // Use E-pin
