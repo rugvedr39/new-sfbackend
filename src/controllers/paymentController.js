@@ -209,12 +209,29 @@ exports.getPaymentToPiadOrNot = async (req, res) => {
     if (transaction==null) {
       res.status(200).json({ message: 'User Has Not Upgraded The Level Please Contact User' });
     }else{
-      const transactionPMF = await Transaction.findOne({payerId:Object(user._id),status: 'unpaid',type:'PMF'});
-      if (transactionPMF!=null){
-        res.status(200).json({ message: 'User Has Not Paid The PMF Please Contact User' });
-      }else{
-        res.status(200).json({ status:201 });
+      const sumofamount = await Transaction.aggregate([
+        { $match: { receiverId: Object(user._id),status:"paid" } }, // Match transactions for the given receiverId
+        { $group: { _id: '$receiverId', totalAmount: { $sum: '$amount' } } } // Group by receiverId and calculate the sum of amount
+      ]);
+      totalAmount = sumofamount[0].totalAmount;
+      const referralCount = await User.countDocuments({referralCode:username})
+
+      if (totalAmount < 1000) {
+        return res.status(200).json({ status: 201 });
+      } else if (totalAmount >= 1000 && referralCount >= 3) {
+        if (totalAmount > 5000 && referralCount >= 5) {
+          if (totalAmount > 10000 && referralCount >= 10) {
+            return res.status(200).json({ status: 201 });
+          } else if (totalAmount <= 10000) {
+            return res.status(200).json({ status: 201 });
+          }
+        } else if (totalAmount <= 5000) {
+          return res.status(200).json({ status: 201 });
+        }
       }
+      // If conditions are not met
+      res.status(200).json({ message: 'User condition not met. Please contact the user and ask them to add more directs.' });
+
     }
   } catch (error) {
     console.error('Error getting payment', error);
