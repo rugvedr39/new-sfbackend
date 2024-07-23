@@ -80,7 +80,7 @@ exports.getTransactionsWithSenderInfo = async (req, res) => {
         select: 'username email mobileNumber'
       })
       .skip(skip)
-      .sort({ date: -1 }) 
+      .sort({ date: -1}) 
       .limit(limit)
       .exec();
 
