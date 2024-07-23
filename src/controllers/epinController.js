@@ -2,6 +2,21 @@ const Epin = require('../models/Epin');
 const User = require('../models/User');
 
 // Generate E-pin
+
+const generateUniqueId = async () => {
+  let uniqueId;
+  let isUnique = false;
+  while (!isUnique) {
+    uniqueId = Math.floor(10000 + Math.random() * 90000).toString(); // Generates a 5-digit number
+    const existingEpin = await Epin.findOne({ ePinId: uniqueId });
+    if (!existingEpin) {
+      isUnique = true;
+    }
+  }
+  return uniqueId;
+};
+
+
 exports.generateEpin = async (req, res) => {
   const { type, amount, count,assignedTo } = req.body;
 
@@ -20,7 +35,7 @@ exports.generateEpin = async (req, res) => {
 
   const epins = [];
   for (let i = 0; i < count; i++) {
-    const ePinId = `${Date.now()}-${i}`;
+    const ePinId = await generateUniqueId(); // Generate unique 5-digit ePin ID
 
     const epin = {
       ePinId,
