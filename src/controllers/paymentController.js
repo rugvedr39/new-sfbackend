@@ -213,7 +213,12 @@ exports.getPaymentToPiadOrNot = async (req, res) => {
         { $match: { receiverId: Object(user._id),status:"paid" } }, // Match transactions for the given receiverId
         { $group: { _id: '$receiverId', totalAmount: { $sum: '$amount' } } } // Group by receiverId and calculate the sum of amount
       ]);
-      totalAmount = sumofamount[0].totalAmount;
+
+      if(sumofamount.length==0){
+        return res.status(200).json({ status: 201 });
+      }
+
+      const totalAmount = sumofamount[0].totalAmount;
       const referralCount = await User.countDocuments({referralCode:username})
 
       if (totalAmount < 1000) {
