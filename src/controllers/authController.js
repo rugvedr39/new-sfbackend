@@ -219,8 +219,6 @@ exports.getUserProfile = async (req, res) => {
 // Update user profile
 exports.updateUserProfile = async (req, res) => {
   const user = await User.findById(req.body._id);
-  console.log(user);
-
   if (user) {
     user.email = req.body.email || user.email;
     user.mobileNumber = req.body.mobileNumber || user.mobileNumber;
