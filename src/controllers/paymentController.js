@@ -224,18 +224,11 @@ exports.getPaymentToPiadOrNot = async (req, res) => {
       if (totalAmount < 1000) {
         return res.status(200).json({ status: 201 });
       } else if (totalAmount >= 1000 && referralCount >= 3) {
-        if (totalAmount > 5000 && referralCount >= 5) {
-          if (totalAmount > 10000 && referralCount >= 10) {
-            return res.status(200).json({ status: 201 });
-          } else if (totalAmount <= 10000) {
-            return res.status(200).json({ status: 201 });
-          }
-        } else if (totalAmount <= 5000) {
-          return res.status(200).json({ status: 201 });
-        }
+        return res.status(200).json({ status: 201 });
       }
-      // If conditions are not met
       res.status(200).json({ message: 'User condition not met. Please contact the user and ask them to add more directs.' });
+
+      // If conditions are not met
 
     }
   } catch (error) {
