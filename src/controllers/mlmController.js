@@ -77,14 +77,14 @@ exports.getTeamByLevel = async (req, res) => {
       .limit(limit) // Limit records per page
       .populate({
         path: 'userId',
-        select: 'username email mobileNumber sponsorId',
+        select: 'username mobileNumber sponsorId name',
         populate: {
           path: 'sponsorId',
           select: 'name username'
         }
-      }); // Populate user details and sponsor details
+      });
 
-    const totalMembersAtLevel = await MlmStructure.countDocuments({ level });
+    const totalMembersAtLevel = await MlmStructure.countDocuments({ level,uplineId:Object(userId) });
 
     const totalPages = Math.ceil(totalMembersAtLevel / limit); // Calculate total pages
 
@@ -98,3 +98,4 @@ exports.getTeamByLevel = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
