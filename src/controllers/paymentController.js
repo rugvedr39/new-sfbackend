@@ -207,7 +207,7 @@ exports.getPaymentToPiadOrNot = async (req, res) => {
     const user = await User.findOne({username: username})
     const transaction = await Transaction.findOne({payerId:Object(user._id),amount:amount,status: 'paid',type:'commission',level:level});
     if (transaction==null) {
-      res.status(200).json({ message: 'User Has Not Upgraded The Level Please Contact User' });
+      res.status(200).json({ message: 'User Has Not Upgraded The Level Please Contact User \n If Still User is not Upgarding the Account Then Click on Pay To Company' });
     }else{
       const sumofamount = await Transaction.aggregate([
         { $match: { receiverId: Object(user._id),status:"paid" } }, // Match transactions for the given receiverId
@@ -236,6 +236,20 @@ exports.getPaymentToPiadOrNot = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 }
+
+
+
+exports.PaytoCompany = async (req, res) => {
+ try {
+  const {id}=req.body
+  const transaction = await Transaction.findOne({_id:Object(id)});
+  transaction.receiverId = "66973cc83079a2d915bce430"
+  transaction.save()
+  res.status(200).json({ status:200,message: 'Please Go Back And Pay To Company' });
+ } catch (error) {
+  res.status(200).json({  status:500,message: 'Internal server error' });
+ }
+};
 
 
 exports.getTransactionsPMF = async (req, res) => {

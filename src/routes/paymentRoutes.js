@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { getTransactionsWithReceiverInfo,updateTransactionUtrAndDate,
-    getTransactionsWithSenderInfo,getMatrixSummary,updateTransactionDone,getPaymentToPiadOrNot,getTransactionsPMF,payPMF,gettotals } = require('../controllers/paymentController');
+    getTransactionsWithSenderInfo,getMatrixSummary,updateTransactionDone,getPaymentToPiadOrNot,getTransactionsPMF,payPMF,gettotals,PaytoCompany } = require('../controllers/paymentController');
 const { protect } = require('../middleware/authMiddleware');
 //for getting to pay details
 router.get('/transactions/payer/:payerId',protect, getTransactionsWithReceiverInfo);
@@ -14,6 +14,7 @@ router.put('/transactions/done/:transactionId', updateTransactionDone);
 router.put('/transactions/payPMF/:transactionId/:ePinId', payPMF);
 // 
 router.post('/transactions/wanttopay', getPaymentToPiadOrNot);
+router.post('/transactions/changeToComapny', PaytoCompany);
 // get PMF transaction
 router.get('/getTransactionsPMF/:payerId', getTransactionsPMF);
 
